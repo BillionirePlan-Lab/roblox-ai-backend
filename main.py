@@ -19,7 +19,6 @@ async def generate_script(data: PromptRequest):
         if not api_key:
             return {"success": False, "error": "GEMINI_API_KEY missing in Render Environment"}
             
-        # গুগলের অফিশিয়াল নতুন ক্লায়েন্ট
         client = genai.Client(api_key=api_key.strip())
         
         system_instruction = (
@@ -31,9 +30,9 @@ async def generate_script(data: PromptRequest):
         
         full_prompt = f"{system_instruction}\n\nTask: {data.prompt}"
         
-        # সর্বশেষ Gemini 2.0 Flash মডেল
+        # মডেলের নাম gemini-2.5-flash আপডেট করা হয়েছে
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-2.5-flash',
             contents=full_prompt,
         )
         
