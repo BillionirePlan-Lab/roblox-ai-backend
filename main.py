@@ -1,7 +1,7 @@
 import os
-import google.generativeai as genai
 from fastapi import FastAPI
 from pydantic import BaseModel
+from google import genai
 
 app = FastAPI(title="Roblox AI Script Assistant")
 
@@ -19,10 +19,8 @@ async def generate_script(data: PromptRequest):
         if not api_key:
             return {"success": False, "error": "GEMINI_API_KEY missing in Render Environment"}
             
-        genai.configure(api_key=api_key.strip())
-        
-        # কাজ করবে এমন মডেলের নাম
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        # গুগলের অফিশিয়াল নতুন ক্লায়েন্ট
+        client = genai.Client(api_key=api_key.strip())
         
         system_instruction = (
             "You are a Roblox Luau expert. "
@@ -32,17 +30,12 @@ async def generate_script(data: PromptRequest):
         )
         
         full_prompt = f"{system_instruction}\n\nTask: {data.prompt}"
-        response = model.generate_content(full_prompt)
         
-        if not response.text:
-            return {"success": False, "error": "Empty response received from Gemini"}
-            
-        clean_code = response.text.replace("```lua", "").replace("```", "").strip()
-        return {"success": True, "script": clean_code}
-        
-    except Exception as e:
-        print(f"Backend Error: {str(e)}")
-        return {"success": False, "error": str(e)}
+        # সর্বশেষ Gemini 2.0 Flash মডেল
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=full_prompt,
+        )
         
         if not response.text:
             return {"success": False, "error": "Empty response received from Gemini"}
