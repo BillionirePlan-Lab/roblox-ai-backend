@@ -5,18 +5,21 @@ from pydantic import BaseModel
 
 app = FastAPI(title="Roblox AI Script Assistant")
 
-# আসল API Key গোপন রাখতে Environment Variable ব্যবহার করা হচ্ছে
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
-
 class PromptRequest(BaseModel):
     prompt: str
 
 @app.post("/generate")
 async def generate_script(data: PromptRequest):
     try:
-        # জটিল কোডিংয়ের জন্য গুগলের সেরা মডেল Pro ব্যবহার করা হয়েছে
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        # প্রতি রিকোয়েস্টে ফ্রেশভাবে API Key লোড করা হচ্ছে
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is missing!")
+            
+        genai.configure(api_key=api_key)
+        
+        # ফ্রি ও ফাস্ট সার্ভিস নিশ্চিত করতে flash মডেল ব্যবহার করা হয়েছে
+        model = genai.GenerativeModel("gemini-1.5-flash")
         
         system_instruction = (
             "You are a Roblox Luau expert. "
@@ -35,4 +38,6 @@ async def generate_script(data: PromptRequest):
         return {"success": True, "script": clean_code}
         
     except Exception as e:
+        # আসল এররটি Render-এর Logs ট্যাবে দেখতে পাওয়ার জন্য প্রিন্ট করা হলো
+        print(f"--- DETAILED ERROR: {str(e)} ---")
         raise HTTPException(status_code=500, detail=str(e))
