@@ -21,8 +21,8 @@ async def generate_script(data: PromptRequest):
             
         genai.configure(api_key=api_key.strip())
         
-        # ফ্রি এবং ফাস্ট রেসপন্সের জন্য gemini-1.5-flash
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        # মডেলের নাম আপডেট করা হয়েছে
+        model = genai.GenerativeModel("gemini-1.5-flash-latest")
         
         system_instruction = (
             "You are a Roblox Luau expert. "
