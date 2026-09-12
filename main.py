@@ -30,9 +30,9 @@ async def generate_script(data: PromptRequest):
         
         full_prompt = f"{system_instruction}\n\nTask: {data.prompt}"
         
-        # মডেলের নাম gemini-2.5-flash আপডেট করা হয়েছে
+        # গুগলের মেসেজ অনুযায়ী সঠিক মডেল নাম
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-3.6-flash',
             contents=full_prompt,
         )
         
