@@ -21,7 +21,7 @@ async def generate_script(data: PromptRequest):
             
         genai.configure(api_key=api_key.strip())
         
-        # মডেলের নাম আপডেট করা হয়েছে
+        # কাজ করবে এমন মডেলের নাম
         model = genai.GenerativeModel("gemini-1.5-flash-latest")
         
         system_instruction = (
@@ -33,6 +33,16 @@ async def generate_script(data: PromptRequest):
         
         full_prompt = f"{system_instruction}\n\nTask: {data.prompt}"
         response = model.generate_content(full_prompt)
+        
+        if not response.text:
+            return {"success": False, "error": "Empty response received from Gemini"}
+            
+        clean_code = response.text.replace("```lua", "").replace("```", "").strip()
+        return {"success": True, "script": clean_code}
+        
+    except Exception as e:
+        print(f"Backend Error: {str(e)}")
+        return {"success": False, "error": str(e)}
         
         if not response.text:
             return {"success": False, "error": "Empty response received from Gemini"}
